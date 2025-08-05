@@ -1,0 +1,21 @@
+﻿kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  ipFamilies:
+    - IPv4
+  ports:
+    - name: http-8080
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app: {{ .Release.Name }}
+    deployment: {{ .Release.Name }}
+status:
+  loadBalancer: {}
