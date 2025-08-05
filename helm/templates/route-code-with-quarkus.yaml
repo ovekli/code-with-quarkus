@@ -1,0 +1,18 @@
+﻿kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  host: {{ .Release.Name }}-{{ .Release.Namespace }}.apps-crc.testing
+  to:
+    kind: Service
+    name: {{ .Release.Name }}
+    weight: 100
+  port:
+    targetPort: '8081'
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
