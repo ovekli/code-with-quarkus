@@ -1,35 +1,36 @@
-﻿kind: BuildConfig
-apiVersion: build.openshift.io/v1
+﻿apiVersion: build.openshift.io/v1
+kind: BuildConfig
 metadata:
-  namespace: test-headless
+  labels:
+    app: {{ .Release.Name }}
+  name: {{ .Release.Name }}
 spec:
+  failedBuildsHistoryLimit: 5
   nodeSelector: null
   output:
     to:
       kind: ImageStreamTag
-      name: 'code-with-quarkus:latest'
-  resources: {}
-  successfulBuildsHistoryLimit: 5
-  failedBuildsHistoryLimit: 5
-  strategy:
-    type: Docker
-    dockerStrategy:
-      dockerfilePath: src/main/docker/Dockerfile.jvm.staged
+      name: {{ .Release.Name }}:latest
   postCommit: {}
-  source:
-    type: Git
-    git:
-      uri: 'https://github.com/devfile-samples/devfile-sample-code-with-quarkus.git'
-  triggers:
-    - type: Generic
-      generic:
-        secretReference:
-          name: code-with-quarkus-generic-webhook-secret
-    - type: GitHub
-      github:
-        secretReference:
-          name: code-with-quarkus-github-webhook-secret
-    - type: ConfigChange
+  resources: {}
   runPolicy: Serial
-status:
-  lastVersion: 2
+  source:
+    dockerfile: |
+      FROM registry.redhat.io/ubi8/openjdk-21:1.21-2.1752676423
+
+      ENV LANGUAGE="sv_SE:sv"
+
+      COPY --chown=185 target/*.jar /deployments/
+
+      EXPOSE 8080
+      EXPOSE 8989
+      USER 185
+
+      ENV JAVA_APP_JAR="/deployments/*.jar"
+
+      ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]
+    type: Dockerfile
+  strategy:
+    dockerStrategy: {}
+    type: Docker
+  successfulBuildsHistoryLimit: 5
