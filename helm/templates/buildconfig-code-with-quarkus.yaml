@@ -1,0 +1,35 @@
+﻿kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  namespace: test-headless
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'code-with-quarkus:latest'
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: src/main/docker/Dockerfile.jvm.staged
+  postCommit: {}
+  source:
+    type: Git
+    git:
+      uri: 'https://github.com/devfile-samples/devfile-sample-code-with-quarkus.git'
+  triggers:
+    - type: Generic
+      generic:
+        secretReference:
+          name: code-with-quarkus-generic-webhook-secret
+    - type: GitHub
+      github:
+        secretReference:
+          name: code-with-quarkus-github-webhook-secret
+    - type: ConfigChange
+  runPolicy: Serial
+status:
+  lastVersion: 2
