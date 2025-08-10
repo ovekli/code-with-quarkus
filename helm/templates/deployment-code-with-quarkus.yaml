@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 metadata:
   annotations:
-    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ .Release.Name }}:latest","namespace":"test-headless"},"fieldPath":"spec.template.spec.containers[?(@.name==\"{{ .Release.Name }}\")].image","paused":"false"}]'
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ .Release.Name }}:latest","namespace":"{{ .Release.Namespace }}"},"fieldPath":"spec.template.spec.containers[?(@.name==\"{{ .Release.Name }}\")].image","paused":"false"}]'
   name: {{ .Release.Name }}
   labels:
     app: {{ .Release.Name }}
